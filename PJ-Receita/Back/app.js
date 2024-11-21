@@ -62,24 +62,27 @@ app.get('/receitas', (req, res) => {
 
 // Cadastrar uma nova receita
 app.post('/receitas', upload.single('imagem'), (req, res) => {
-    const { titulo, descricao, ingredientes, modo_preparo, categoria } = req.body;
+    const { titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria } = req.body;
     const imagemPath = req.file ? req.file.path : null;
 
-    if (!titulo || !descricao || !ingredientes || !modo_preparo || !categoria || !imagemPath) {
+    if (!titulo || !descricao || !ingredientesMassa || !ingredientesCobertura || !modoPreparoMassa || !modoPreparoCobertura || !tempoPreparo || !categoria || !imagemPath) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
     db.run(
-        'INSERT INTO Receitas (titulo, descricao, ingredientes, modo_preparo, categoria, imagem) VALUES (?, ?, ?, ?, ?, ?)',
-        [titulo, descricao, ingredientes, modo_preparo, categoria, imagemPath],
+        'INSERT INTO Receitas (titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria, imagem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria, imagemPath],
         function (err) {
             if (err) return res.status(400).json({ error: err.message });
             res.json({
                 id: this.lastID,
                 titulo,
                 descricao,
-                ingredientes,
-                modo_preparo,
+                ingredientesMassa,
+                ingredientesCobertura,
+                modoPreparoMassa,
+                modoPreparoCobertura,
+                tempoPreparo,
                 categoria,
                 imagem: imagemPath
             });
@@ -90,15 +93,15 @@ app.post('/receitas', upload.single('imagem'), (req, res) => {
 // Atualizar uma receita existente
 app.put('/receitas/:id', (req, res) => {
     const { id } = req.params;
-    const { titulo, descricao, ingredientes, modo_preparo, categoria } = req.body;
+    const { titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria } = req.body;
 
-    if (!titulo || !descricao || !ingredientes || !modo_preparo || !categoria) {
+    if (!titulo || !descricao || !ingredientesMassa || !ingredientesCobertura || !modoPreparoMassa || !modoPreparoCobertura || !tempoPreparo || !categoria) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
     db.run(
-        'UPDATE Receitas SET titulo = ?, descricao = ?, ingredientes = ?, modo_preparo = ?, categoria = ? WHERE id = ?',
-        [titulo, descricao, ingredientes, modo_preparo, categoria, id],
+        'UPDATE Receitas SET titulo = ?, descricao = ?, ingredientesMassa = ?, ingredientesCobertura = ?, modoPreparoMassa = ?, modoPreparoCobertura = ?, tempoPreparo = ?, categoria = ? WHERE id = ?',
+        [titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria, id],
         function (err) {
             if (err) return res.status(400).json({ error: err.message });
             if (this.changes === 0) return res.status(404).json({ message: 'Receita não encontrada' });

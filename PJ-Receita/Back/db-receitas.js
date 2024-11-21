@@ -14,16 +14,19 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
-    // Criação da tabela de receitas
+    // Criação da tabela de receitas com os novos campos
     db.run(`
         CREATE TABLE IF NOT EXISTS Receitas (
-            id          INTEGER         PRIMARY KEY AUTOINCREMENT, 
-            titulo      VARCHAR(100)    NOT NULL, 
-            descricao   TEXT            NOT NULL, 
-            ingredientes TEXT           NOT NULL, 
-            modo_preparo TEXT           NOT NULL, 
-            categoria   VARCHAR(50), 
-            imagem      VARCHAR(255)
+            id                      INTEGER         PRIMARY KEY AUTOINCREMENT, 
+            titulo                  VARCHAR(100)    NOT NULL, 
+            descricao               TEXT            NOT NULL, 
+            ingredientesMassa       TEXT            NOT NULL, 
+            ingredientesCobertura   TEXT            NOT NULL, 
+            modoPreparoMassa        TEXT            NOT NULL, 
+            modoPreparoCobertura    TEXT            NOT NULL, 
+            tempoPreparo            VARCHAR(50)     NOT NULL, 
+            categoria               VARCHAR(50), 
+            imagem                  VARCHAR(255)
         );
     `);
 
