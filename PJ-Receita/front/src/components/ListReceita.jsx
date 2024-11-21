@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CompCss/ListReceita.css';
 
-const url = 'http://localhost:3000/pets';
+const url = 'http://localhost:3000/receitas';
 
 const ListReceita = () => {
     const [pets, setPets] = useState([]);

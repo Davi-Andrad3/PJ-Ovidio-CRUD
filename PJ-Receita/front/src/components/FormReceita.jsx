@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CompCss/FormReceita.css';
 
-const url = 'http://localhost:3000/pets';
+const url = 'http://localhost:3000/receitas';
 
 const FormReceita = () => {
     const [formData, setFormData] = useState({
