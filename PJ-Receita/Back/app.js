@@ -1,7 +1,7 @@
 // Import necessary modules
 const express = require('express');
 const cors = require('cors');
-const db = require('./db-receitas'); 
+const db = require('./db-receitas');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
@@ -49,8 +49,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Routes and Endpoints
-// Receita-related endpoints (CRUD)
+// *** Receita Routes ***
 
 // Listar todas as receitas
 app.get('/receitas', (req, res) => {
@@ -90,40 +89,36 @@ app.post('/receitas', upload.single('imagem'), (req, res) => {
     );
 });
 
-// Atualizar uma receita existente
-app.put('/receitas/:id', (req, res) => {
-    const { id } = req.params;
-    const { titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria } = req.body;
+// *** User Routes ***
 
-    if (!titulo || !descricao || !ingredientesMassa || !ingredientesCobertura || !modoPreparoMassa || !modoPreparoCobertura || !tempoPreparo || !categoria) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+// Rota de login (POST)
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Usuário e senha são obrigatórios' });
     }
 
-    db.run(
-        'UPDATE Receitas SET titulo = ?, descricao = ?, ingredientesMassa = ?, ingredientesCobertura = ?, modoPreparoMassa = ?, modoPreparoCobertura = ?, tempoPreparo = ?, categoria = ? WHERE id = ?',
-        [titulo, descricao, ingredientesMassa, ingredientesCobertura, modoPreparoMassa, modoPreparoCobertura, tempoPreparo, categoria, id],
-        function (err) {
-            if (err) return res.status(400).json({ error: err.message });
-            if (this.changes === 0) return res.status(404).json({ message: 'Receita não encontrada' });
-            res.json({ message: `Receita atualizada com ID ${id}` });
+    try {
+        // Busca o usuário pelo nome de usuário
+        const user = users.find(user => user.username === username); // 'users' pode ser seu banco ou uma lista
+        if (!user) {
+            return res.status(400).json({ message: 'Usuário não encontrado' });
         }
-    );
+
+        // Verifica a senha
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(400).json({ message: 'Senha incorreta' });
+        }
+
+        // Se as credenciais forem válidas, você pode retornar um token de sessão ou mensagem de sucesso
+        const token = jwt.sign({ username: user.username }, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ message: 'Login bem-sucedido!', token });
+    } catch (err) {
+        res.status(500).json({ error: 'Erro ao fazer login' });
+    }
 });
-
-// Excluir uma receita
-app.delete('/receitas/:id', (req, res) => {
-    const { id } = req.params;
-
-    db.run('DELETE FROM Receitas WHERE id = ?', [id], function (err) {
-        if (err) return res.status(400).json({ error: err.message });
-        if (this.changes === 0) return res.status(404).json({ message: 'Receita não encontrada' });
-        res.json({ message: `Receita excluída com ID ${id}` });
-    });
-});
-
-// User endpoints remain similar to pet shop
-// Login, cadastro, atualização e autenticação de usuários
-// [Essas partes permanecem inalteradas, exceto pelo contexto adaptado ao sistema de receitas]
 
 // Start the server
 const PORT = 3000;
